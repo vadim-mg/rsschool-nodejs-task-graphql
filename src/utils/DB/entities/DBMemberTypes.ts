@@ -5,8 +5,8 @@ export type MemberTypeEntity = {
   discount: number;
   monthPostsLimit: number;
 };
-type CreateMemberTypeDTO = MemberTypeEntity;
-type ChangeMemberTypeDTO = Partial<Omit<MemberTypeEntity, 'id'>>;
+export type CreateMemberTypeDTO = MemberTypeEntity;
+export type ChangeMemberTypeDTO = Partial<Omit<MemberTypeEntity, 'id'>>;
 
 export default class DBMemberTypes extends DBEntity<
   MemberTypeEntity,
