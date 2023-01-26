@@ -1,6 +1,6 @@
 
 import { HttpErrors } from "@fastify/sensible/lib/httpError";
-import DBMemberTypes, { ChangeMemberTypeDTO } from "../utils/DB/entities/DBMemberTypes";
+import DBMemberTypes from "../utils/DB/entities/DBMemberTypes";
 
 export class MemberTypes {
   private memberTypes: DBMemberTypes
@@ -26,7 +26,7 @@ export class MemberTypes {
   }
 
 
-  updateMemberType = async (id: string, body: ChangeMemberTypeDTO) => {
+  updateMemberType = async (id: string, body: any) => {
     try {
       return await this.memberTypes.change(id, body)
     } catch {

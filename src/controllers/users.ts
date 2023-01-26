@@ -1,8 +1,6 @@
 
 import { HttpErrors } from "@fastify/sensible/lib/httpError";
 import DB from "../utils/DB/DB";
-import { ChangeUserDTO, CreateUserDTO } from "../utils/DB/entities/DBUsers";
-
 class Users {
   private db: DB
   private httpErrors: HttpErrors
@@ -27,7 +25,7 @@ class Users {
   }
 
 
-  addUser = async (body: CreateUserDTO) => {
+  addUser = async (body: any) => {
     try {
       const result = await this.db.users.create(body)
       return result
@@ -37,7 +35,7 @@ class Users {
   }
 
 
-  updateUser = async (id: string, body: ChangeUserDTO) => {
+  updateUser = async (id: string, body: any) => {
     try {
       return await this.db.users.change(id, body)
     } catch {
@@ -56,11 +54,11 @@ class Users {
           await this.db.users.change(user.id, { subscribedToUserIds: user.subscribedToUserIds })
         }
       })
-      const profile = await this.db.profiles.findOne({key:'userId', equals: id})
-      if(profile){
+      const profile = await this.db.profiles.findOne({ key: 'userId', equals: id })
+      if (profile) {
         await this.db.profiles.delete(profile.id)
       }
-      const posts = await this.db.posts.findMany({key:'userId', equals: id})
+      const posts = await this.db.posts.findMany({ key: 'userId', equals: id })
       posts.forEach(async (post) => {
         await this.db.posts.delete(post.id)
       })

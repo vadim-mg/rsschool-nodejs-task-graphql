@@ -1,7 +1,6 @@
 
 import { HttpErrors } from "@fastify/sensible/lib/httpError";
 import DB from "../utils/DB/DB";
-import { CreateProfileDTO, ChangeProfileDTO } from '../utils/DB/entities/DBProfiles'
 
 export class Profiles {
   private db: DB
@@ -27,7 +26,7 @@ export class Profiles {
   }
 
 
-  addProfile = async (body: CreateProfileDTO) => {
+  addProfile = async (body: any) => {
     try {
       const memberType = await this.db.memberTypes.findOne({ key: 'id', equals: body.memberTypeId })
       if (!memberType) {
@@ -49,7 +48,7 @@ export class Profiles {
   }
 
 
-  updateProfile = async (id: string, body: ChangeProfileDTO) => {
+  updateProfile = async (id: string, body: any) => {
     try {
       if (body.memberTypeId) {
         const memberType = await this.db.memberTypes.findOne({ key: 'id', equals: body.memberTypeId })

@@ -1,7 +1,6 @@
 
 import { HttpErrors } from "@fastify/sensible/lib/httpError";
 import DB from "../utils/DB/DB";
-import { CreatePostDTO, ChangePostDTO } from '../utils/DB/entities/DBPosts'
 
 export class Posts {
   private db: DB
@@ -27,7 +26,7 @@ export class Posts {
   }
 
 
-  addPost = async (body: CreatePostDTO) => {
+  addPost = async (body: any) => {
     try {
       const user = await this.db.users.findOne({ key: 'id', equals: body.userId })
       if (!user) {
@@ -41,7 +40,7 @@ export class Posts {
   }
 
 
-  updatePost = async (id: string, body: ChangePostDTO) => {
+  updatePost = async (id: string, body: any) => {
     try {
       return await this.db.posts.change(id, body)
     } catch (error: any) {
