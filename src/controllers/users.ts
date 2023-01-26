@@ -60,6 +60,10 @@ class Users {
       if(profile){
         await this.db.profiles.delete(profile.id)
       }
+      const posts = await this.db.posts.findMany({key:'userId', equals: id})
+      posts.forEach(async (post) => {
+        await this.db.posts.delete(post.id)
+      })
 
       const result = await this.db.users.delete(id)
       return result
