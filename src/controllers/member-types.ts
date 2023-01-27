@@ -1,24 +1,15 @@
 
-import { HttpErrors } from "@fastify/sensible/lib/httpError";
-import DBMemberTypes from "../utils/DB/entities/DBMemberTypes";
+import { Controller } from "./controller"
 
-export class MemberTypes {
-  private memberTypes: DBMemberTypes
-  private httpErrors: HttpErrors
-
-  constructor(memberTypes: DBMemberTypes, httpErrors: HttpErrors) {
-    this.memberTypes = memberTypes
-    this.httpErrors = httpErrors
-  }
-
+export class MemberTypes extends Controller {
 
   getMemberTypes = async () => {
-    return await this.memberTypes.findMany()
+    return await this.db.memberTypes.findMany()
   }
 
 
   getMemberType = async (id: string) => {
-    const result = await this.memberTypes.findOne({ key: 'id', equals: id })
+    const result = await this.db.memberTypes.findOne({ key: 'id', equals: id })
     if (!result) {
       throw this.httpErrors.notFound(`Not found user: ${id}`)
     }
@@ -28,7 +19,7 @@ export class MemberTypes {
 
   updateMemberType = async (id: string, body: any) => {
     try {
-      return await this.memberTypes.change(id, body)
+      return await this.db.memberTypes.change(id, body)
     } catch {
       throw this.httpErrors.badRequest()
     }

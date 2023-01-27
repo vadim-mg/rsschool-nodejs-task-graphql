@@ -12,7 +12,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
 ): Promise<void> => {
 
-  const users = new Users(fastify.db, fastify.httpErrors)
+  const users = new Users(fastify)
 
   fastify.get('/', async function (request, reply): Promise<UserEntity[]> {
     return await users.getUsers()

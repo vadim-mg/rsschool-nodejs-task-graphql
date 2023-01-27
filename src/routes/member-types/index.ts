@@ -9,7 +9,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
 ): Promise<void> => {
 
-  const memberTypes = new MemberTypes(fastify.db.memberTypes, fastify.httpErrors)
+  const memberTypes = new MemberTypes(fastify)
 
   fastify.get('/', async function (request, reply): Promise<
     MemberTypeEntity[]

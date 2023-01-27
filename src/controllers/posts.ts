@@ -1,15 +1,6 @@
 
-import { HttpErrors } from "@fastify/sensible/lib/httpError";
-import DB from "../utils/DB/DB";
-
-export class Posts {
-  private db: DB
-  private httpErrors: HttpErrors
-
-  constructor(db: DB, httpErrors: HttpErrors) {
-    this.db = db
-    this.httpErrors = httpErrors
-  }
+import { Controller } from "./controller"
+export class Posts extends Controller {
 
 
   getPosts = async () => {

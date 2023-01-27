@@ -1,15 +1,7 @@
 
-import { HttpErrors } from "@fastify/sensible/lib/httpError";
-import DB from "../utils/DB/DB";
-class Users {
-  private db: DB
-  private httpErrors: HttpErrors
+import { Controller } from "./controller";
 
-  constructor(db: DB, httpErrors: HttpErrors) {
-    this.db = db
-    this.httpErrors = httpErrors
-  }
-
+export class Users extends Controller {
 
   getUsers = async () => {
     return await this.db.users.findMany()
@@ -27,8 +19,7 @@ class Users {
 
   addUser = async (body: any) => {
     try {
-      const result = await this.db.users.create(body)
-      return result
+      return await this.db.users.create(body)
     } catch {
       throw this.httpErrors.badRequest()
     }
@@ -63,8 +54,7 @@ class Users {
         await this.db.posts.delete(post.id)
       })
 
-      const result = await this.db.users.delete(id)
-      return result
+      return await this.db.users.delete(id)
     } catch {
       throw this.httpErrors.badRequest(`Not found user: ${id}`)
     }
@@ -88,7 +78,11 @@ class Users {
 
     if (!subscriber.subscribedToUserIds.includes(id))
       subscriber.subscribedToUserIds.push(id)
-    return await this.db.users.change(subscribeId, { subscribedToUserIds: subscriber.subscribedToUserIds })
+
+    return await this.db.users.change(
+      subscribeId,
+      { subscribedToUserIds: subscriber.subscribedToUserIds }
+    )
   }
 
 
@@ -109,10 +103,11 @@ class Users {
     }
 
     subscriber.subscribedToUserIds.splice(indexOf, 1)
-    return await this.db.users.change(subscribeId, { subscribedToUserIds: subscriber.subscribedToUserIds })
+
+    return await this.db.users.change(
+      subscribeId,
+      { subscribedToUserIds: subscriber.subscribedToUserIds }
+    )
   }
-
 }
-
-export { Users }
 
