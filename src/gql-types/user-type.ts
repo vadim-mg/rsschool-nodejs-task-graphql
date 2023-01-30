@@ -1,6 +1,13 @@
-import { GraphQLID, GraphQLList, GraphQLObjectType, GraphQLString } from "graphql";
-import DB from "../utils/DB/DB";
+import {
+  GraphQLID,
+  GraphQLInputObjectType,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from "graphql";
 
+import DB from "../utils/DB/DB";
 
 export class UserType extends GraphQLObjectType {
   constructor(
@@ -10,7 +17,7 @@ export class UserType extends GraphQLObjectType {
     memberTypeType: GraphQLObjectType
   ) {
     super({
-      name: 'user',
+      name: 'User',
       fields: () => ({
         'id': {
           type: GraphQLID
@@ -65,3 +72,36 @@ export class UserType extends GraphQLObjectType {
     })
   }
 }
+
+
+export const UserInputCreateType = new GraphQLInputObjectType({
+  name: 'UserInputCreate',
+  description: 'InputObjectType for DTO.',
+  fields: {
+    'firstName': {
+      type: new GraphQLNonNull(GraphQLString)
+    },
+    'lastName': {
+      type: new GraphQLNonNull(GraphQLString)
+    },
+    'email': {
+      type: new GraphQLNonNull(GraphQLString)
+    },
+  },
+})
+
+export const UserInputUpdateType = new GraphQLInputObjectType({
+  name: 'UserInputUpdate',
+  description: 'InputObjectType for DTO.',
+  fields: {
+    'firstName': {
+      type: GraphQLString
+    },
+    'lastName': {
+      type: GraphQLString
+    },
+    'email': {
+      type: GraphQLString
+    },
+  },
+})
