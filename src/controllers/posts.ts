@@ -11,7 +11,7 @@ export class Posts extends Controller {
   getPost = async (id: string) => {
     const result = await this.db.posts.findOne({ key: 'id', equals: id })
     if (!result) {
-      throw this.httpErrors.notFound(`Not found post: ${id}`)
+      throw this.generateError(`Not found post: ${id}`, '404')
     }
     return result
   }
@@ -21,12 +21,12 @@ export class Posts extends Controller {
     try {
       const user = await this.db.users.findOne({ key: 'id', equals: body.userId })
       if (!user) {
-        throw this.httpErrors.badRequest('User id not found')
+        throw this.generateError('User id not found', '400')
       }
 
       return await this.db.posts.create(body)
     } catch (error: any) {
-      throw this.httpErrors.badRequest(error)
+      throw this.generateError(error, '400')
     }
   }
 
@@ -35,7 +35,7 @@ export class Posts extends Controller {
     try {
       return await this.db.posts.change(id, body)
     } catch (error: any) {
-      throw this.httpErrors.badRequest(error)
+      throw this.generateError(error, '400')
     }
   }
 
@@ -44,7 +44,7 @@ export class Posts extends Controller {
     try {
       return await this.db.posts.delete(id)
     } catch {
-      throw this.httpErrors.badRequest()
+      throw this.generateError(undefined, '400')
     }
   }
 }

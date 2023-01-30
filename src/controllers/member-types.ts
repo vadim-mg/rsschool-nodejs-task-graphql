@@ -11,7 +11,7 @@ export class MemberTypes extends Controller {
   getMemberType = async (id: string) => {
     const result = await this.db.memberTypes.findOne({ key: 'id', equals: id })
     if (!result) {
-      throw this.httpErrors.notFound(`Not found user: ${id}`)
+      throw this.generateError(`Not found user: ${id}`, '404')
     }
     return result
   }
@@ -21,7 +21,7 @@ export class MemberTypes extends Controller {
     try {
       return await this.db.memberTypes.change(id, body)
     } catch {
-      throw this.httpErrors.badRequest()
+      throw this.generateError('Bad Request!', '400')
     }
   }
 }

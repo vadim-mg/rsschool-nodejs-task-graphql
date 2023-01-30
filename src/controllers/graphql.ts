@@ -10,8 +10,12 @@ import {
 } from 'graphql';
 import { MemberTypeType } from "../gql-types/member-type-type";
 import { UserType, UserInputCreateType, UserInputUpdateType } from "../gql-types/user-type";
-import { ProfileType } from "../gql-types/profile-type";
+import { ProfileInputCreateType, ProfileInputUpdateType, ProfileType } from "../gql-types/profile-type";
 import { PostType } from "../gql-types/post-type";
+import { Profiles } from "./profiles";
+import { MemberTypes } from "./member-types";
+import { Users } from "./users";
+import { Posts } from "./posts";
 
 
 export class GraphqlController extends Controller {
@@ -19,12 +23,20 @@ export class GraphqlController extends Controller {
   schema
 
   constructor(fastify: FastifyInstance) {
-    super(fastify)
+    super(fastify, true)
 
     const memberType: MemberTypeType = new MemberTypeType(this.db)
     const profileType: ProfileType = new ProfileType(this.db)
     const postType: PostType = new PostType(this.db)
     const userType: UserType = new UserType(this.db, postType, profileType, memberType)
+
+    const profiles = new Profiles(fastify)
+    const memberTypes = new MemberTypes(fastify)
+    const users = new Users(fastify)
+    const posts = new Posts(fastify)
+    profiles
+    users
+    posts
 
     this.schema = new GraphQLSchema({
       query: new GraphQLObjectType({
@@ -33,61 +45,46 @@ export class GraphqlController extends Controller {
           'memberTypes': {
             type: new GraphQLList(memberType),
             args: {},
-            resolve: async () => {
-              return await this.db.memberTypes.findMany()
-            }
+            resolve: async () => await memberTypes.getMemberTypes()
           },
           'memberType': {
             type: memberType,
             args: { id: { type: GraphQLID } },
-            resolve: async (source, args: { id: string }) => {
-              return await this.db.memberTypes.findOne({ key: 'id', equals: args.id })
-            }
+            resolve: async (source, args: { id: string }) =>
+              await memberTypes.getMemberType(args.id)
           },
           'users': {
             description: 'users list',
             type: new GraphQLList(userType),
             args: {},
-            resolve: async () => {
-              return await this.db.users.findMany()
-            }
+            resolve: async () => await users.getUsers()
           },
           'user': {
             type: userType,
             args: { id: { type: GraphQLID } },
-            resolve: async (source, args: { id: string }) => {
-              return await this.db.users.findOne({ key: 'id', equals: args.id })
-            }
+            resolve: async (source, args: { id: string }) => await users.getUser(args.id)
           },
           'profiles': {
             description: 'profiles list',
             type: new GraphQLList(profileType),
             args: {},
-            resolve: async () => {
-              return await this.db.profiles.findMany()
-            }
+            resolve: async () => await profiles.getProfiles()
           },
           'profile': {
             type: profileType,
             args: { id: { type: GraphQLID } },
-            resolve: async (source, args: { id: string }) => {
-              return await this.db.profiles.findOne({ key: 'id', equals: args.id })
-            }
+            resolve: async (source, args: { id: string }) => await profiles.getProfile(args.id)
           },
           'posts': {
             description: 'posts list',
             type: new GraphQLList(postType),
             args: {},
-            resolve: async () => {
-              return await this.db.posts.findMany()
-            }
+            resolve: async () => await posts.getPosts()
           },
           'post': {
             type: postType,
             args: { id: { type: GraphQLID } },
-            resolve: async (source, args: { id: string }) => {
-              return await this.db.posts.findOne({ key: 'id', equals: args.id })
-            }
+            resolve: async (source, args: { id: string }) => await posts.getPost(args.id)
           }
         },
       }),
@@ -99,9 +96,7 @@ export class GraphqlController extends Controller {
             args: {
               userData: { type: new GraphQLNonNull(UserInputCreateType) }
             },
-            resolve: async (source, args, options) => {
-              return await this.db.users.create(args.userData)
-            }
+            resolve: async (source, args, options) => await users.addUser(args.userData)
           },
           'updateUser': {
             type: userType,
@@ -109,9 +104,23 @@ export class GraphqlController extends Controller {
               id: { type: new GraphQLNonNull(GraphQLID) },
               userData: { type: new GraphQLNonNull(UserInputUpdateType) }
             },
-            resolve: async (source, args, options) => {
-              return await this.db.users.change(args.id, args.userData)
-            }
+            resolve: async (source, args, options) => await users.updateUser(args.id, args.userData)
+          },
+          'createProfile': {
+            type: profileType,
+            args: {
+              profileData: { type: new GraphQLNonNull(ProfileInputCreateType) }
+            },
+
+            resolve: async (source, args, options) => await profiles.addProfile(args.profileData)
+          },
+          'updateProfile': {
+            type: profileType,
+            args: {
+              id: { type: new GraphQLNonNull(GraphQLID) },
+              profileData: { type: new GraphQLNonNull(ProfileInputUpdateType) }
+            },
+            resolve: async (source, args, options) => await profiles.updateProfile(args.id, args.profileData)
           },
         }
       })

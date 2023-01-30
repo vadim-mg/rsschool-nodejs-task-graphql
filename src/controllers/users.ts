@@ -11,7 +11,7 @@ export class Users extends Controller {
   getUser = async (id: string) => {
     const result = await this.db.users.findOne({ key: 'id', equals: id })
     if (!result) {
-      throw this.httpErrors.notFound(`Not found user: ${id}`)
+      throw this.generateError(`Not found user: ${id}`,'404')
     }
     return result
   }
@@ -21,7 +21,7 @@ export class Users extends Controller {
     try {
       return await this.db.users.create(body)
     } catch {
-      throw this.httpErrors.badRequest()
+      throw this.generateError(undefined, '400')
     }
   }
 
@@ -30,7 +30,7 @@ export class Users extends Controller {
     try {
       return await this.db.users.change(id, body)
     } catch {
-      throw this.httpErrors.badRequest()
+      throw this.generateError(undefined, '400')
     }
   }
 
@@ -56,7 +56,7 @@ export class Users extends Controller {
 
       return await this.db.users.delete(id)
     } catch {
-      throw this.httpErrors.badRequest(`Not found user: ${id}`)
+      throw this.generateError(`Not found user: ${id}`, '400')
     }
   }
 
@@ -64,16 +64,16 @@ export class Users extends Controller {
   subscribeUserTo = async (id: string, subscribeId: string) => {
     const user = await this.db.users.findOne({ key: 'id', equals: id })
     if (!user) {
-      throw this.httpErrors.badRequest(`Not found user: ${id}`)
+      throw this.generateError(`Not found user: ${id}`, '400')
     }
 
     const subscriber = await this.db.users.findOne({ key: 'id', equals: subscribeId })
     if (!subscriber) {
-      throw this.httpErrors.badRequest(`Not found subscribing user: ${subscribeId}`)
+      throw this.generateError(`Not found subscribing user: ${subscribeId}`, '400')
     }
 
     if (id === subscribeId) {
-      throw this.httpErrors.badRequest(`Can't subscribe to self`)
+      throw this.generateError(`Can't subscribe to self`, '400')
     }
 
     if (!subscriber.subscribedToUserIds.includes(id))
@@ -89,17 +89,17 @@ export class Users extends Controller {
   unsubscribeUserFrom = async (id: string, subscribeId: string) => {
     const user = await this.db.users.findOne({ key: 'id', equals: id })
     if (!user) {
-      throw this.httpErrors.badRequest(`Not found user: ${id}`)
+      throw this.generateError(`Not found user: ${id}`, '400')
     }
 
     const subscriber = await this.db.users.findOne({ key: 'id', equals: subscribeId })
     if (!subscriber) {
-      throw this.httpErrors.badRequest(`Not found unsubscribing user: ${subscribeId}`)
+      throw this.generateError(`Not found unsubscribing user: ${subscribeId}`, '400')
     }
 
     const indexOf = subscriber.subscribedToUserIds.indexOf(id)
     if (indexOf < 0) {
-      throw this.httpErrors.badRequest(`User isn't subscribed to: ${id}`)
+      throw this.generateError(`User isn't subscribed to: ${id}`, '400')
     }
 
     subscriber.subscribedToUserIds.splice(indexOf, 1)
