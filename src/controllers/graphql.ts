@@ -107,6 +107,25 @@ export class GraphqlController extends Controller {
             },
             resolve: async (source, args, options) => await users.updateUser(args.id, args.userData)
           },
+          'subscribeToUser': {
+            type: userType,
+            description: 'user with $id subscribe to user with $userId',
+            args: {
+              id: { type: new GraphQLNonNull(GraphQLID) },
+              userId: { type: new GraphQLNonNull(GraphQLID) },
+            },
+            resolve: async (source, args, options) => await users.subscribeUserTo(args.id, args.userId)
+          },
+          'unsubscribeFromUser': {
+            type: userType,
+            description: 'user with $id unsubscribe from user with $userId',
+            args: {
+              id: { type: new GraphQLNonNull(GraphQLID) },
+              userId: { type: new GraphQLNonNull(GraphQLID) },
+            },
+            resolve: async (source, args, options) => await users.unsubscribeUserFrom(args.id, args.userId)
+          },
+
           'createProfile': {
             type: profileType,
             args: {
