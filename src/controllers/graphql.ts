@@ -8,10 +8,11 @@ import {
   GraphQLList,
   GraphQLNonNull,
 } from 'graphql';
-import { MemberTypeType } from "../gql-types/member-type-type";
+import { MemberTypeInputUpdateType, MemberTypeType } from "../gql-types/member-type-type";
 import { UserType, UserInputCreateType, UserInputUpdateType } from "../gql-types/user-type";
 import { ProfileInputCreateType, ProfileInputUpdateType, ProfileType } from "../gql-types/profile-type";
 import { PostInputCreateType, PostInputUpdateType, PostType } from "../gql-types/post-type";
+
 import { Profiles } from "./profiles";
 import { MemberTypes } from "./member-types";
 import { Users } from "./users";
@@ -25,10 +26,10 @@ export class GraphqlController extends Controller {
   constructor(fastify: FastifyInstance) {
     super(fastify, true)
 
-    const memberType: MemberTypeType = new MemberTypeType(this.db)
+    const memberTypeType: MemberTypeType = new MemberTypeType(this.db)
     const profileType: ProfileType = new ProfileType(this.db)
     const postType: PostType = new PostType(this.db)
-    const userType: UserType = new UserType(this.db, postType, profileType, memberType)
+    const userType: UserType = new UserType(this.db, postType, profileType, memberTypeType)
 
     const profiles = new Profiles(fastify)
     const memberTypes = new MemberTypes(fastify)
@@ -43,12 +44,12 @@ export class GraphqlController extends Controller {
         name: 'RootQueryType',
         fields: {
           'memberTypes': {
-            type: new GraphQLList(memberType),
+            type: new GraphQLList(memberTypeType),
             args: {},
             resolve: async () => await memberTypes.getMemberTypes()
           },
           'memberType': {
-            type: memberType,
+            type: memberTypeType,
             args: { id: { type: GraphQLID } },
             resolve: async (source, args: { id: string }) =>
               await memberTypes.getMemberType(args.id)
@@ -137,6 +138,14 @@ export class GraphqlController extends Controller {
               postData: { type: new GraphQLNonNull(PostInputUpdateType) }
             },
             resolve: async (source, args, options) => await posts.updatePost(args.id, args.postData)
+          },
+          'updateMemberType': {
+            type: memberTypeType,
+            args: {
+              id: { type: new GraphQLNonNull(GraphQLID) },
+              memberTypeData: { type: new GraphQLNonNull(MemberTypeInputUpdateType) }
+            },
+            resolve: async (source, args, options) => await memberTypes.updateMemberType(args.id, args.memberTypeData)
           },
         }
       })
