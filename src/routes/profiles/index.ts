@@ -2,13 +2,18 @@ import { FastifyPluginAsyncJsonSchemaToTs } from '@fastify/type-provider-json-sc
 import { idParamSchema } from '../../utils/reusedSchemas';
 import { createProfileBodySchema, changeProfileBodySchema } from './schema';
 import type { ProfileEntity } from '../../utils/DB/entities/DBProfiles';
+import { Profiles } from '../../controllers/profiles';
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
 ): Promise<void> => {
-  fastify.get('/', async function (request, reply): Promise<
-    ProfileEntity[]
-  > {});
+
+  const profiles = new Profiles(fastify)
+
+  fastify.get('/', async function (request, reply): Promise<ProfileEntity[]> {
+    return await profiles.getProfiles()
+  });
+
 
   fastify.get(
     '/:id',
@@ -17,7 +22,9 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         params: idParamSchema,
       },
     },
-    async function (request, reply): Promise<ProfileEntity> {}
+    async function (request, reply): Promise<ProfileEntity> {
+      return await profiles.getProfile(request.params.id)
+    }
   );
 
   fastify.post(
@@ -27,7 +34,9 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         body: createProfileBodySchema,
       },
     },
-    async function (request, reply): Promise<ProfileEntity> {}
+    async function (request, reply): Promise<ProfileEntity> {
+      return await profiles.addProfile(request.body)
+    }
   );
 
   fastify.delete(
@@ -37,7 +46,9 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         params: idParamSchema,
       },
     },
-    async function (request, reply): Promise<ProfileEntity> {}
+    async function (request, reply): Promise<ProfileEntity> {
+      return await profiles.deleteProfile(request.params.id)
+    }
   );
 
   fastify.patch(
@@ -48,7 +59,9 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         params: idParamSchema,
       },
     },
-    async function (request, reply): Promise<ProfileEntity> {}
+    async function (request, reply): Promise<ProfileEntity> {
+      return await profiles.updateProfile(request.params.id, request.body)
+    }
   );
 };
 
