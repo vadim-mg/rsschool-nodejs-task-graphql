@@ -18,7 +18,6 @@ import { MemberTypes } from "./member-types";
 import { Users } from "./users";
 import { Posts } from "./posts";
 
-
 export class GraphqlController extends Controller {
 
   schema
@@ -35,9 +34,6 @@ export class GraphqlController extends Controller {
     const memberTypes = new MemberTypes(fastify)
     const users = new Users(fastify)
     const posts = new Posts(fastify)
-    profiles
-    users
-    posts
 
     this.schema = new GraphQLSchema({
       query: new GraphQLObjectType({
@@ -172,14 +168,6 @@ export class GraphqlController extends Controller {
   }
 
   exec = async (mutation: any, query: any, variables: any) => {
-
-    console.log('mutation')
-    console.log(mutation)
-    console.log('query')
-    console.log(query)
-    console.log('variables')
-    console.log(variables)
-
     return await graphql({
       schema: this.schema,
       source: query,
