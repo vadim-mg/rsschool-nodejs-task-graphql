@@ -48,7 +48,7 @@ export class Profiles extends Controller {
       }
       return await this.db.profiles.change(id, body)
     } catch (error: any) {
-      throw this.generateError(error, '400')
+      throw this.generateError(undefined, '400')
     }
   }
 
