@@ -11,7 +11,7 @@ import {
 import { MemberTypeType } from "../gql-types/member-type-type";
 import { UserType, UserInputCreateType, UserInputUpdateType } from "../gql-types/user-type";
 import { ProfileInputCreateType, ProfileInputUpdateType, ProfileType } from "../gql-types/profile-type";
-import { PostType } from "../gql-types/post-type";
+import { PostInputCreateType, PostInputUpdateType, PostType } from "../gql-types/post-type";
 import { Profiles } from "./profiles";
 import { MemberTypes } from "./member-types";
 import { Users } from "./users";
@@ -121,6 +121,22 @@ export class GraphqlController extends Controller {
               profileData: { type: new GraphQLNonNull(ProfileInputUpdateType) }
             },
             resolve: async (source, args, options) => await profiles.updateProfile(args.id, args.profileData)
+          },
+          'createPost': {
+            type: postType,
+            args: {
+              postData: { type: new GraphQLNonNull(PostInputCreateType) }
+            },
+
+            resolve: async (source, args, options) => await posts.addPost(args.postData)
+          },
+          'updatePost': {
+            type: postType,
+            args: {
+              id: { type: new GraphQLNonNull(GraphQLID) },
+              postData: { type: new GraphQLNonNull(PostInputUpdateType) }
+            },
+            resolve: async (source, args, options) => await posts.updatePost(args.id, args.postData)
           },
         }
       })

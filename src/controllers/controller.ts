@@ -17,7 +17,10 @@ export class Controller {
 
   generateError = (message?: string, type?: string) => {
     if (this.isGql) {
-      throw new GraphQLError(message ?? 'Unknown error')
+      const err = this.httpErrors.badRequest(message)
+      throw new GraphQLError(message ?? err.message, {
+        'originalError': err
+      })
     }
     switch (type) {
       case '400':
